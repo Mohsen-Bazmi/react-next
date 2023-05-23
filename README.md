@@ -20,6 +20,11 @@ psql -h localhost -p 5433 -U prisma -d car_rental
 ```
 And type `prisma` when it asks you for the password.
 
+## How to apply the migrations
+The next step is to apply the migraions.
+
+Run `npx prisma migrate dev`.
+
 ## How to run the app
 
 Run the following command in the project's [root path](./) to start the development server.

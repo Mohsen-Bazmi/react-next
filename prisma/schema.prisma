@@ -9,3 +9,28 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Users {
+  name      String   @id
+  email     String   @unique
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+///A container for reservations that are made together (a premature optimization 😉).
+model Reservations {
+  id        String          @id @default(uuid())
+  updatedAt DateTime        @default(now()) @updatedAt
+  reserver  String
+  hours     ReservedHours[]
+}
+
+model ReservedHours {
+  id   String   @id
+  hour Int
+  date DateTime
+
+  reservation   Reservations @relation(fields: [reservationId], references: [id])
+  reservationId String
+  reserver      String
+  @@index([date])
+}
