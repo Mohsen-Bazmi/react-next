@@ -25,6 +25,16 @@ The next step is to apply the migraions.
 
 Run `npx prisma migrate dev`.
 
+## How to run the tests
+To run the tests run the following command in the project's root.
+```bash
+npm test
+```
+
+## Using real database in tests
+To use a real db in tests simply pass the real repository in. But ensure that the db is running and it's accessible through the connection string in the `.env` file.
+
+
 ## How to run the app
 
 Run the following command in the project's [root path](./) to start the development server.
