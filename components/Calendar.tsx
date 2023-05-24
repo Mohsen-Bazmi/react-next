@@ -1,10 +1,9 @@
 'use client'
+import { validWorkhours, Hour } from '@/domain/types';
 import React, { useId, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
-const workHours = [9, 10, 11, 12, 13, 14, 15, 16, 17] as const;
-type Hour = typeof workHours[number];
 type HourProps = { hour: Hour, isFree: Boolean };
 const Hour = ({ hour, isFree }: HourProps) => {
     let classes = "border-white disabled hover:border-2 w-10 h-10 rounded-lg flex items-center justify-center shadow-lg";
@@ -20,7 +19,7 @@ const HourPicker = () => {
     return <>
         <label>At</label>
         <div className='flex flex-row font-mono text-white text-sm font-bold leading-6'>
-            {workHours.map(hour => <Hour key={hour} hour={hour} isFree={false} />)}
+            {validWorkhours.map(hour => <Hour key={hour} hour={hour} isFree={false} />)}
         </div>
     </>
 }
