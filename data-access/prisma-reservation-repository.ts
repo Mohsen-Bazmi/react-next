@@ -1,26 +1,33 @@
 import { Hour, NumberOfHours } from '@/domain/types';
 import { ReservationRepository } from '@/domain/repository'
 import { db } from '@/lib/db';
+import { log } from 'console';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const PrismaReservationRepository: ReservationRepository = {
     add: async ({ id, reserver, hours }) => {
-
-        await db.reservations.create({
-            data: {
-                id, reserver,
-                hours: {
-                    createMany: {
-                        data: hours.map(h => ({
-                            id: `${h.on.toDateString()}_${h.at}`, //Concurrency lock
-                            date: h.on,
-                            hour: h.at,
-                            reservationId: id,
-                            reserver
-                        }))
+        try {
+            await db.reservations.create({
+                data: {
+                    id, reserver,
+                    hours: {
+                        createMany: {
+                            data: hours.map(h => ({
+                                id: `${h.on.toDateString()}_${h.at}`, //Concurrency lock
+                                date: h.on,
+                                hour: h.at,
+                                reservationId: id,
+                                reserver
+                            }))
+                        }
                     }
                 }
-            }
-        });
+            });
+        } catch (e) {
+            if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002')
+                throw new Error("Overlapping reservations");
+            throw e;
+        }
 
     },
 
