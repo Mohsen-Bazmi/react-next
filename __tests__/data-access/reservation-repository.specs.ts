@@ -5,8 +5,8 @@ import { ReservationRepository } from "@/domain/repository";
 import { NewReservation, ReservedHour } from "@/domain/types";
 
 describe.each([
-    PrismaReservationRepository,// The real db clears the data => use the containerized sand box
-    // InMemoryReservationRepository
+    PrismaReservationRepository,// cleans the data => use the containerized sand box
+    InMemoryReservationRepository
 ])('Reservation repository', (reservations: ReservationRepository) => {
 
     afterEach(reservations.clear);
@@ -73,7 +73,7 @@ describe.each([
             reserver: "dummy"
         }
 
-        expect(() => reservations.add(reservation)).rejects.
+        await expect(() => reservations.add(reservation)).rejects.
             toThrowError("Overlapping reservations");
 
     });
@@ -89,7 +89,7 @@ describe.each([
         }
         await reservations.add(theSameReservation);
 
-        expect(() => reservations.add(theSameReservation)).rejects
+        await expect(() => reservations.add(theSameReservation)).rejects
             .toThrowError("Overlapping reservations");
 
     });

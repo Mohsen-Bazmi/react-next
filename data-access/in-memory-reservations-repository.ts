@@ -1,10 +1,15 @@
 import { ReservationRepository } from "@/domain/repository";
 import { NewReservation, ReservedDayReadModel, ReservedHour, ReservedHourReadModel } from "@/domain/types";
 
-let reservations: NewReservation[] = [];
 export const InMemoryReservationRepository: ReservationRepository = {
+
     add: (reservation: NewReservation): Promise<void> => {
+
+        if (containsOverlaps(reservation))
+            return Promise.reject(new Error("Overlapping reservations"));
+
         reservations.push(reservation);
+
         return Promise.resolve();
     },
     days: (): Promise<ReservedDayReadModel[]> => {
@@ -40,3 +45,26 @@ export const InMemoryReservationRepository: ReservationRepository = {
     }
 };
 
+let reservations: NewReservation[] = [];
+
+
+
+
+const containOverlaps = (hours: ReservedHour[]) =>
+    hours.some((l, li) =>
+        hours.some((r, ri) =>
+            li != ri &&
+            l.at == r.at &&
+            l.on == r.on
+        ));
+
+const overlapsWith = (reservation: NewReservation, reservations: NewReservation[]) =>
+    reservations.some(res =>
+        res.hours.some(l => reservation.hours.some(r =>
+            l.at == r.at &&
+            l.on == r.on
+        )));
+
+const containsOverlaps = (reservation: NewReservation) =>
+    overlapsWith(reservation, reservations) ||
+    containOverlaps(reservation.hours);
