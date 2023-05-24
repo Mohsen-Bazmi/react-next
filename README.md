@@ -31,6 +31,9 @@ To run the tests run the following command in the project's root.
 npm test
 ```
 
+## Coverage report
+Run `npm run test-coverage` then open the [coverage/lcov-report/index.html](./coverage/lcov-report/index.html) file in your browser.
+
 ## Using real database in tests
 To use a real db in tests simply pass the real repository in. But ensure that the db is running and it's accessible through the connection string in the `.env` file.
 
