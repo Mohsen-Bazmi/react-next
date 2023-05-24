@@ -1,7 +1,6 @@
-import { Hour, NumberOfHours } from '@/domain/types';
+import { Hour, NumberOfHoursPerDay } from '@/domain/types';
 import { ReservationRepository } from '@/domain/repository'
 import { db } from '@/lib/db';
-import { log } from 'console';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const PrismaReservationRepository: ReservationRepository = {
@@ -40,7 +39,7 @@ export const PrismaReservationRepository: ReservationRepository = {
 
         return dates.map(day => ({
             date: day.date,
-            numberOfHours: day._count as NumberOfHours
+            numberOfHours: day._count as NumberOfHoursPerDay
         }));
 
     },
