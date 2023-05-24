@@ -12,7 +12,7 @@ describe('reservation service', () => {
         const today = new Date();
 
         const command: Reserve = {
-            command: 'reserve',
+            type: 'reserve',
             reservedBy: 'Mohsen',
             From: { date: today, at: 9 },
             To: { date: today, at: 10 },
@@ -20,7 +20,7 @@ describe('reservation service', () => {
 
         await ReservationService.handle(command);
 
-        expect(await repository.days()).toContain({
+        expect(await repository.days()).toContainEqual({
             date: today,
             numberOfHours: 1
         });
