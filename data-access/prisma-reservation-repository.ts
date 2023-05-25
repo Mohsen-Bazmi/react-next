@@ -1,5 +1,5 @@
 import { Hour, NumberOfHoursPerDay } from '@/domain/types';
-import { ReservationRepository } from '@/domain/repository'
+import { ReservationRepository } from '@/domain/reservation-repository';
 import { db } from '@/lib/db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
@@ -8,7 +8,7 @@ export const PrismaReservationRepository: ReservationRepository = {
         try {
             await db.reservations.create({
                 data: {
-                    id, reserver,
+                    id,
                     hours: {
                         createMany: {
                             data: hours.map(h => ({

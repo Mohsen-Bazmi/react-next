@@ -1,7 +1,7 @@
 
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
-import { ReservationRepository } from "@/domain/repository";
+import { ReservationRepository } from "@/domain/reservation-repository";
 import { NewReservation, ReservedHour } from "@/domain/types";
 
 describe.each([

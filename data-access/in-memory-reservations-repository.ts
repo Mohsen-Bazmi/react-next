@@ -1,4 +1,4 @@
-import { ReservationRepository } from "@/domain/repository";
+import { ReservationRepository } from "@/domain/reservation-repository";
 import { NewReservation, ReservedDayReadModel, ReservedHour, ReservedHourReadModel } from "@/domain/types";
 
 export const InMemoryReservationRepository: ReservationRepository = {
