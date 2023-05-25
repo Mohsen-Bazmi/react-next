@@ -9,6 +9,8 @@ export const PrismaReservationRepository: ReservationRepository = {
             await db.reservations.create({
                 data: {
                     id,
+                    firstName: reserver.firstName,
+                    lastName: reserver.lastName,
                     hours: {
                         createMany: {
                             data: hours.map(h => ({
@@ -16,7 +18,8 @@ export const PrismaReservationRepository: ReservationRepository = {
                                 date: h.on,
                                 hour: h.at,
                                 reservationId: id,
-                                reserver
+                                firstName: reserver.firstName,
+                                lastName: reserver.lastName,
                             }))
                         }
                     }
@@ -48,13 +51,17 @@ export const PrismaReservationRepository: ReservationRepository = {
         const result = await db.reservedHours.findMany({
             select: {
                 hour: true,
-                reserver: true
+                firstName: true,
+                lastName: true
             }
         })
         return result.map(h => ({
             on: day,
             at: h.hour as Hour,
-            reserver: h.reserver,
+            reserver: {
+                firstName: h.firstName,
+                lastName: h.lastName
+            }
         }))
     },
 

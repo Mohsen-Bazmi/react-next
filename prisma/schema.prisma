@@ -20,7 +20,8 @@ model Users {
 model Reservations {
   id        String          @id @default(uuid())
   updatedAt DateTime        @default(now()) @updatedAt
-  reserver  String
+  firstName String
+  lastName  String
   hours     ReservedHours[]
 }
 
@@ -31,6 +32,8 @@ model ReservedHours {
 
   reservation   Reservations @relation(fields: [reservationId], references: [id])
   reservationId String
-  reserver      String
+  firstName     String
+  lastName      String
+
   @@index([date])
 }

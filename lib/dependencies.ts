@@ -1,5 +1,5 @@
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository"
-import { ReservationRepository } from "@/domain/repository"
+import { ReservationRepository } from "@/domain/reservation-repository";
 
 const services = {
     reservationRpository: PrismaReservationRepository

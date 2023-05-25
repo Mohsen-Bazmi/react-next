@@ -1,30 +1,47 @@
+import { Hour, ReservedHour } from "@/domain/types";
+import { getReservationRepository } from "@/lib/dependencies";
+
 type WorkhourDto = {
-    at: number
+    at: Hour
     date: Date
 };
 
 export type Reserve = {
-    command: 'reserve';
+    type: 'reserve';
     id?: string;
-    reservedBy: string
-    From: WorkhourDto;
-    To: WorkhourDto;
+    for: { firstName: string, lastName: string }
+    from: WorkhourDto;
+    to: WorkhourDto;
 };
 
 export type CancelReservation = {
-    command: 'cancelReservation';
+    type: 'cancelReservation';
     ReservationId: string;
 };
 
-export type Command = Reserve | CancelReservation;
-type CommandTypes = 'reserve' | 'cancelReservation';
-
-type CommandHandler = (command: Command) => Promise<void>;
-// To allow for Aspect Oriented Programming
+type CommandHandler = (command: Reserve | CancelReservation) => Promise<void>;
+// To allow Aspect Oriented Programming
 type ReservationService = { handle: CommandHandler };
 
 export const ReservationService: ReservationService = {
-    handle: (command) => {
-        throw new Error("Function not implemented.");
+    handle: async (command) => {
+        if (command.type === "reserve") {
+            const repository = getReservationRepository();
+            const hours = [
+                {
+                    on: command.from.date,
+                    at: command.from.at
+                } as ReservedHour
+            ];
+
+
+            await repository.add({
+                hours,
+                reserver: command.for,
+                id: command.id
+            });
+        }
+        else throw new Error("Not implemented.");
+
     }
 }

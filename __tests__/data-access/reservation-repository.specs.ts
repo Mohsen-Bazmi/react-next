@@ -2,7 +2,8 @@
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
 import { ReservationRepository } from "@/domain/reservation-repository";
-import { NewReservation, ReservedHour } from "@/domain/types";
+import { NewReservation, ReservedHour, Reserver } from "@/domain/types";
+
 
 describe.each([
     // PrismaReservationRepository,// cleans the data => use the containerized sand box
@@ -10,6 +11,7 @@ describe.each([
 ])('Reservation repository', (reservations: ReservationRepository) => {
 
     afterEach(reservations.clear);
+
 
     it('stores reservations', async () => {
         const friday = new Date();
@@ -19,7 +21,7 @@ describe.each([
             hours: [
                 { on: friday, at: 9 }
             ],
-            reserver: "dummy"
+            reserver: mohsen
         });
 
 
@@ -27,7 +29,7 @@ describe.each([
             .toContainEqual({
                 on: friday,
                 at: 9,
-                reserver: "dummy"
+                reserver: mohsen
             });
     });
 
@@ -43,7 +45,7 @@ describe.each([
                 { on: saturday, at: 9 },
                 { on: saturday, at: 10 },
             ],
-            reserver: "dummy"
+            reserver: mohsen
         });
 
         const days = await reservations.days();
@@ -70,7 +72,7 @@ describe.each([
                 duplicateHours,
                 duplicateHours,
             ],
-            reserver: "dummy"
+            reserver: mohsen
         }
 
         await expect(() => reservations.add(reservation)).rejects.
@@ -85,7 +87,7 @@ describe.each([
             hours: [
                 { on: friday, at: 9 },
             ],
-            reserver: "dummy"
+            reserver: mohsen
         }
         await reservations.add(theSameReservation);
 
@@ -95,6 +97,5 @@ describe.each([
     });
 
 
-
-
+    const mohsen: Reserver = { firstName: 'Mohsen', lastName: 'Bazmi' };
 })

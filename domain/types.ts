@@ -16,15 +16,18 @@ export type ReservedDayReadModel = {
     // hours: ReservedHour[] for performance implications. Will get the necessary ones in a secondary rount trip
 };
 
-export type ReservedHourReadModel = ReservedHour & { reserver: string }
+export type ReservedHourReadModel = ReservedHour & { reserver: Reserver }
 
 export type ReservedHour = {
     on: Date
     at: Hour
 }
-
+export type Reserver = {
+    firstName: string
+    lastName: string
+}
 export type NewReservation = {
     id?: string
-    reserver: string
+    reserver: Reserver
     hours: ReservedHour[]
 };
