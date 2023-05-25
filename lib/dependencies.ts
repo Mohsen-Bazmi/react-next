@@ -1,12 +1,20 @@
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository"
 import { ReservationRepository } from "@/domain/reservation-repository";
 
-const services = {
-    reservationRpository: PrismaReservationRepository
-}
 
+let reservationRpository = PrismaReservationRepository;
 export const setReservationRepository = (repository: ReservationRepository) =>
-    services.reservationRpository = repository;
+    reservationRpository = repository;
 
 export const getReservationRepository = () =>
-    services.reservationRpository;
+    reservationRpository;
+
+
+
+
+let arbitraryDateTime: Date | undefined;
+export const setCurrentTime = (date: Date) =>
+    arbitraryDateTime = date;
+
+export const getCurrentTime = () =>
+    arbitraryDateTime ?? new Date();

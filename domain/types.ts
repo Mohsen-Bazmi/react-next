@@ -1,12 +1,19 @@
-export const validWorkhours = [9, 10, 11, 12, 13, 14, 15, 16] as const;
-export type Hour = typeof validWorkhours[number];
-const isWithinWorkhoursRange = (hour: any): hour is Hour =>
-    validWorkhours.includes(hour);
+export const BusinessHours = [9, 10, 11, 12, 13, 14, 15, 16] as const;
+export const OpenOfBusiessHour = 9;
+export const CloseOfBusiessHour = 17;
+
+export type BusinessHour = typeof BusinessHours[number];
+export type OpenOfBusinessHour = 9;
+export type CloseOfBusinessHour = 17;
+const isBusinessHour = (hour: any): hour is BusinessHour =>
+    BusinessHours.includes(hour);
+const isWithinClosedBusinessHoursInterval = (hour: any): hour is BusinessHour | CloseOfBusinessHour =>
+    [...BusinessHours, CloseOfBusiessHour].includes(hour);
 
 type RangeOfLength<Num extends number, Result extends Array<unknown> = []> =
     Result['length'] extends Num ? Result : RangeOfLength<Num, [...Result, Result['length']]>
 
-export type NumberOfHoursPerDay = RangeOfLength<Hour>[number]
+export type NumberOfHoursPerDay = RangeOfLength<BusinessHour>[number]
 
 
 
@@ -20,14 +27,14 @@ export type ReservedHourReadModel = ReservedHour & { reserver: Reserver }
 
 export type ReservedHour = {
     on: Date
-    at: Hour
+    at: BusinessHour
 }
 export type Reserver = {
     firstName: string
     lastName: string
 }
 export type NewReservation = {
-    id?: string
     reserver: Reserver
     hours: ReservedHour[]
+    startDate: Date
 };

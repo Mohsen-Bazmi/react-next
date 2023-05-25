@@ -18,10 +18,11 @@ model Users {
 
 ///A container for reservations that are made together (a premature optimization 😉).
 model Reservations {
-  id        String          @id @default(uuid())
+  id        String          @id
   updatedAt DateTime        @default(now()) @updatedAt
   firstName String
   lastName  String
+  startDate DateTime
   hours     ReservedHours[]
 }
 

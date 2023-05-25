@@ -1,14 +1,16 @@
-import { Hour, NumberOfHoursPerDay } from '@/domain/types';
+import { BusinessHour, NumberOfHoursPerDay } from '@/domain/types';
 import { ReservationRepository } from '@/domain/reservation-repository';
 import { db } from '@/lib/db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const PrismaReservationRepository: ReservationRepository = {
-    add: async ({ id, reserver, hours }) => {
+    add: async ({ reserver, hours, startDate }) => {
         try {
+            const reservationId = startDate.toDateString() + reserver.firstName + reserver.lastName
             await db.reservations.create({
                 data: {
-                    id,
+                    id: reservationId, //Concurrency lock
+                    startDate,
                     firstName: reserver.firstName,
                     lastName: reserver.lastName,
                     hours: {
@@ -17,7 +19,7 @@ export const PrismaReservationRepository: ReservationRepository = {
                                 id: `${h.on.toDateString()}_${h.at}`, //Concurrency lock
                                 date: h.on,
                                 hour: h.at,
-                                reservationId: id,
+                                // reservationId,
                                 firstName: reserver.firstName,
                                 lastName: reserver.lastName,
                             }))
@@ -27,7 +29,7 @@ export const PrismaReservationRepository: ReservationRepository = {
             });
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002')
-                throw new Error("Overlapping reservations");
+                throw new Error("Overlapping reservations. Two people cannot reserve the car, and a person can reserve the car no more than once a day.");
             throw e;
         }
 
@@ -57,7 +59,7 @@ export const PrismaReservationRepository: ReservationRepository = {
         })
         return result.map(h => ({
             on: day,
-            at: h.hour as Hour,
+            at: h.hour as BusinessHour,
             reserver: {
                 firstName: h.firstName,
                 lastName: h.lastName
