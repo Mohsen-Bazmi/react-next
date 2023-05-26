@@ -1,42 +1,46 @@
 import { A } from "@/__test_until__/cloner";
-import { reserveCommand } from "@/__test_until__/prototypes";
+import { pastYear, reserveCommand, today, tomorrow } from "@/__test_until__/prototypes";
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
+import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
+import { CancelReservation } from "@/domain/reserve-command";
+import { ReservedDayReadModel } from "@/domain/types";
+import { setCurrentTime } from "@/lib/dependencies";
 import { setReservationRepository } from "@/lib/dependencies";
 import { ReservationService } from "@/usecases/reservation-service";
-import { addDays } from 'date-fns';
 
-describe('reservation service', () => {
-    const repository = InMemoryReservationRepository
+describe.each([
+    // PrismaReservationRepository,// => turns it into an integration test
+    InMemoryReservationRepository
+])('reservation service', (repository) => {
+
     beforeEach(() => setReservationRepository(repository));
+    beforeAll(() => setCurrentTime(pastYear));
     afterEach(repository.clear);
 
     it('reserves the car', async () => {
-        const today = new Date();
-        const tomorrow = addDays(today, 1);
-
         const reserve = A(reserveCommand, {
             from: { date: today, at: 9 },
-            to: { date: tomorrow, at: 11 },
+            to: { date: tomorrow, at: 10 },
         });
 
         await ReservationService.handle(reserve);
 
-        expect(await repository.days()).toContainEqual({
+        expect(await repository.days()).toContainEqual(<ReservedDayReadModel>{
             date: today,
-            numberOfHours: 10
+            numberOfHours: 8
         });
     });
 
-    //     it('cancels reservations', () => {
+    //The error branch is handled by the type system. => Donesn't need a test
 
-    //         const command: CancelReservation = {
-    //             CommandType: 'cancelReservation',
-    //             ReservationId: ''
-    //         };
+    it.skip('cancels reservations', () => {
 
-    //         ReservationService.handle(command);
+        const command: CancelReservation = {
+            type: 'cancelReservation',
+            reservationId: ''
+        };
 
-    //         expect(true).toBeTruthy();
+        ReservationService.handle(command);
 
-    //     });
+    });
 })
