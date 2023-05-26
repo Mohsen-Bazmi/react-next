@@ -2,6 +2,7 @@ import { BusinessHour, NumberOfHoursPerDay } from '@/domain/types';
 import { ReservationRepository } from '@/domain/reservation-repository';
 import { db } from '@/lib/db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ReservationConfilictError } from '@/domain/errors';
 
 export const PrismaReservationRepository: ReservationRepository = {
     add: async ({ reserver, hours, startDate }) => {
@@ -29,7 +30,7 @@ export const PrismaReservationRepository: ReservationRepository = {
             });
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002')
-                throw new Error("Overlapping reservations. Two people cannot reserve the car, and a person can reserve the car no more than once a day.");
+                throw new ReservationConfilictError("Overlapping reservations. Two people cannot reserve the car, and a person can reserve the car no more than once a day.");
             throw e;
         }
 

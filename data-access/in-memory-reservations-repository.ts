@@ -1,3 +1,4 @@
+import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
 import { NewReservation, ReservedDayReadModel, ReservedHour, ReservedHourReadModel } from "@/domain/types";
 
@@ -6,7 +7,7 @@ export const InMemoryReservationRepository: ReservationRepository = {
     add: (reservation: NewReservation): Promise<void> => {
 
         if (containsOverlaps(reservation))
-            return Promise.reject(new Error("Overlapping reservations"));
+            return Promise.reject(new ReservationConfilictError("Overlapping reservations"));
 
         reservations.push(reservation);
 

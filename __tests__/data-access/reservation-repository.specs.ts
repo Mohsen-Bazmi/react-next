@@ -3,6 +3,7 @@ import { A } from "@/__test_until__/cloner";
 import { friday, mohsen, monday, newReservation } from "@/__test_until__/prototypes";
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
+import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
 import { ReservedHour } from "@/domain/types";
 
@@ -72,7 +73,7 @@ describe.each([
         })
 
         await expect(() => reservations.add(reservation)).rejects.
-            toThrowError("Overlapping reservations");
+            toThrow(ReservationConfilictError);
 
     });
 
@@ -82,7 +83,7 @@ describe.each([
         await reservations.add(theSameReservation);
 
         await expect(() => reservations.add(theSameReservation)).rejects
-            .toThrowError("Overlapping reservations");
+            .toThrow(ReservationConfilictError);
 
     });
 

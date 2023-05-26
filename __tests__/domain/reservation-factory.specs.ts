@@ -1,5 +1,6 @@
 import { A } from "@/__test_until__/cloner";
 import { pastYear, reserveCommand, theDayAfterTomorrow, today, tomorrow } from "@/__test_until__/prototypes";
+import { BusinessRuleError } from "@/domain/errors";
 import { createReservation } from "@/domain/reservation-factory";
 import { NewReservation } from "@/domain/types"
 import { setCurrentTime } from "@/lib/dependencies";
@@ -64,7 +65,7 @@ describe('reservation factory', () => {
 
         const resut = createReservation(command);
 
-        expect(resut).toBeInstanceOf(Error);
+        expect(resut).toBeInstanceOf(BusinessRuleError);
     });
 
 
@@ -79,7 +80,7 @@ describe('reservation factory', () => {
 
         const result = createReservation(command);
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(BusinessRuleError);
 
     });
 
@@ -94,7 +95,7 @@ describe('reservation factory', () => {
 
         const result = createReservation(command);
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(BusinessRuleError);
 
     });
 
@@ -110,7 +111,7 @@ describe('reservation factory', () => {
 
         const result = createReservation(command);
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(BusinessRuleError);
 
     });
 
@@ -125,7 +126,7 @@ describe('reservation factory', () => {
 
         const result = createReservation(command);
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(BusinessRuleError);
 
     });
 
@@ -140,7 +141,7 @@ describe('reservation factory', () => {
 
         const result = createReservation(command);
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(BusinessRuleError);
 
     });
 
@@ -155,7 +156,7 @@ describe('reservation factory', () => {
 
         const result = createReservation(command);
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(BusinessRuleError);
 
     });
 
@@ -171,10 +172,10 @@ describe('reservation factory', () => {
 
         const result = createReservation(command);
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(BusinessRuleError);
 
     });
-    
+
     //Defect Driven Tests:
     it(`doesn't allow taday's hours to overlap tomorrow's`, () => {
         const command = A(reserveCommand, {

@@ -1,8 +1,6 @@
 import { createReservation } from "@/domain/reservation-factory";
 import { CancelReservation, Reserve } from "@/domain/reserve-command";
-import { ReservedHour } from "@/domain/types";
 import { getReservationRepository } from "@/lib/dependencies";
-import { log } from "console";
 
 type CommandHandler = (command: Reserve | CancelReservation) => Promise<void>;
 // To allow Aspect Oriented Programming
