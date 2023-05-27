@@ -1,9 +1,10 @@
 import { A } from "@/__test_until__/cloner";
-import { lastMonthOnMonday, monday, reserveCommand, saturday, theDayAfterTomorrow, today, tomorrow } from "@/__test_until__/prototypes";
+import { friday, lastMonthOnMonday, monday, reserveCommand, saturday, theDayAfterTomorrow, today, tomorrow } from "@/__test_until__/prototypes";
 import { BusinessRuleError } from "@/domain/errors";
 import { createReservation } from "@/domain/reservation-factory";
 import { Reserve } from "@/domain/reserve-command";
 import { NewReservation } from "@/domain/types"
+import { theMondayAfter } from "@/lib/date";
 import { setCurrentTime } from "@/lib/dependencies";
 
 describe('reservation factory', () => {
@@ -176,7 +177,7 @@ describe('reservation factory', () => {
     });
 
     //Defect Driven Tests:
-    it(`doesn't confilict between taday's hours and tomorrow's`, () => {
+    it(`manages the conflict between today's hours and tomorrow's`, () => {
         const command = A(reserveCommand, {
             from: { date: today, at: 9 },
             to: { date: tomorrow, at: 11 },
@@ -204,6 +205,23 @@ describe('reservation factory', () => {
         });
     });
 
+
+
+
+
+    it.each([
+        A(reserveCommand, {
+            from: { date: friday, at: 9 },
+            to: { date: saturday, at: 11 },
+        })
+    ])(`rejects weekend drop-offs`, (command: Reserve) =>
+        expect(createReservation(command)).
+            toBeInstanceOf(BusinessRuleError));
+
+
+
+
+
     it.each([
         A(reserveCommand, {
             from: { date: saturday, at: 9 },
@@ -211,13 +229,15 @@ describe('reservation factory', () => {
         }),
         A(reserveCommand, {
             from: { date: saturday, at: 9 },
-            to: { date: monday, at: 11 },
+            to: { date: theMondayAfter(saturday), at: 11 },
         })
-    ])(`doesn't accept weekend pick-ups`, (command: Reserve) =>
+    ])(`rejects weekend pick-ups`, (command: Reserve) =>
         expect(createReservation(command)).
-            toBeInstanceOf(BusinessRuleError)
-    )
+            toBeInstanceOf(BusinessRuleError));
 
+
+
+            
     beforeEach(() => setCurrentTime(lastMonthOnMonday));
 
 })

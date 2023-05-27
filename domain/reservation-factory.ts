@@ -35,7 +35,7 @@ export const createReservation = (cmd: Reserve): NewReservation | Error => {
 
     const errors = validateReserveCommand(cmd);
     if (errors) return errors;
-    log({ cmd })
+    
     return {
         reserver: cmd.reserverName,
         startDate: cmd.from.date,
