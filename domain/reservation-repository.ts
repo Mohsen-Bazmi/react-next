@@ -1,9 +1,9 @@
-import { NewReservation, ReservedDayReadModel, ReservedHourReadModel } from "./types";
+import { ReservedHoursOfPerDay, Reservation } from "./types";
 
 
 export type ReservationRepository = {
-    add: (reservation: NewReservation) => Promise<void>;
-    forTheSameMonthAs: (month:Date) => Promise<ReservedDayReadModel[]>;
-    on: (day: Date) => Promise<ReservedHourReadModel[]>;
+    add: (reservation: Reservation) => Promise<void>;
+    on: (day: Date) => Promise<Reservation[]>;
+    forTheSameMonthAs: (month:Date) => Promise<ReservedHoursOfPerDay[]>;
     clear: () => Promise<void>
 };

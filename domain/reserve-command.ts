@@ -1,25 +1,9 @@
-import { BusinessHour, CloseOfBusinessHour } from "./types";
+import { ReservationInterval, Reserver } from "./types";
 
-export type ReservationStart = {
-    at: BusinessHour
-    date: Date
-};
-
-export type ReservationEnd = {
-    at: BusinessHour | CloseOfBusinessHour
-    date: Date
-};
-
-export type ReservationInterval = {
-    from: ReservationStart;
-    to: ReservationEnd;
-}
-
-export type Reserve = ReservationInterval & {
+export type Reserve = {
     type: 'reserve';
-    id?: string;
-    reserverName: { firstName: string, lastName: string }
-};
+    reserver: Reserver
+} & ReservationInterval;
 
 export type CancelReservation = {
     type: 'cancelReservation';

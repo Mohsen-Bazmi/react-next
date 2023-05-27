@@ -1,30 +1,32 @@
 import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
-import { NewReservation, ReservedDayReadModel, ReservedHour, ReservedHourReadModel } from "@/domain/types";
+import { ReservedHoursOfPerDay, ReservedHour, Reservation } from "@/domain/types";
 import { firstDayOfMonth, lastDayOfMonth } from "@/lib/date";
 
 export const InMemoryReservationRepository: ReservationRepository = {
 
-    add: (reservation: NewReservation): Promise<void> => {
+    add: (reservation: Reservation): Promise<void> => {
 
         if (containsOverlaps(reservation))
             return Promise.reject(new ReservationConfilictError("Overlapping reservations"));
 
-        reservations.push(reservation);
+        storedReservations.push(reservation);
 
         return Promise.resolve();
     },
-    forTheSameMonthAs: (date): Promise<ReservedDayReadModel[]> => {
+
+
+    forTheSameMonthAs: (date): Promise<ReservedHoursOfPerDay[]> => {
         const startOfMonth = firstDayOfMonth(date);
         const endOfMonth = lastDayOfMonth(date);
 
-        const result = reservations
-            .flatMap(r => r.hours.filter(h => h.on > startOfMonth && endOfMonth > h.on))
-            .reduce<ReservedDayReadModel[]>((previousResult, curr) => {
-                let group = previousResult.find(group => curr.on == group.date);
+        const result = storedReservations
+            .flatMap(({hours}) => hours.filter(({date}) => date > startOfMonth && endOfMonth > date))
+            .reduce<ReservedHoursOfPerDay[]>((previousResult, curr) => {
+                let group = previousResult.find(group => curr.date == group.date);
                 if (!group) {
-                    group = { date: curr.on, numberOfHours: 0 } as ReservedDayReadModel;
-                    previousResult.push(group);//TODO: stop mutating the argument
+                    group = { date: curr.date, numberOfHours: 0 } as ReservedHoursOfPerDay;
+                    previousResult.push(group);//FIX: stop mutating the argument
                 }
                 group.numberOfHours++
                 return previousResult;
@@ -33,24 +35,19 @@ export const InMemoryReservationRepository: ReservationRepository = {
         return Promise.resolve(result);
 
     },
-    on: (day: Date): Promise<ReservedHourReadModel[]> => {
-        const result: ReservedHourReadModel[] =
-            reservations.flatMap(r =>
-                r.hours.map(h => ({
-                    at: h.at,
-                    on: h.on,
-                    reserver: r.reserver,
-                }))).filter(r => r.on = day);
 
-        return Promise.resolve(result);
-    },
+
+    on: (day) =>
+        Promise.resolve(storedReservations.filter(({interval}) => interval.from.date === day)),
+
+
     clear: (): Promise<void> => {
-        reservations = [];
+        storedReservations = [];
         return Promise.resolve();
     }
 };
 
-let reservations: NewReservation[] = [];
+let storedReservations: Reservation[] = [];
 
 
 
@@ -60,16 +57,16 @@ const containOverlaps = (hours: ReservedHour[]) =>
         hours.some((r, ri) =>
             li != ri &&
             l.at == r.at &&
-            l.on == r.on
+            l.date == r.date
         ));
 
-const overlapsWith = (reservation: NewReservation, reservations: NewReservation[]) =>
+const overlapsWith = (reservation: Reservation, reservations: Reservation[]) =>
     reservations.some(res =>
         res.hours.some(l => reservation.hours.some(r =>
             l.at == r.at &&
-            l.on == r.on
+            l.date == r.date
         )));
 
-const containsOverlaps = (reservation: NewReservation) =>
-    overlapsWith(reservation, reservations) ||
-    containOverlaps(reservation.hours);
+const containsOverlaps = (newReservation: Reservation) =>
+    overlapsWith(newReservation, storedReservations) ||
+    containOverlaps(newReservation.hours);

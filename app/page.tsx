@@ -1,4 +1,6 @@
-import { DatePicker } from "../components/Calendar"
+import { ReservationReport } from "@/components/ReservationReport";
+
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -8,8 +10,7 @@ export default function Home() {
               over it. Also for each day, it should show a different shade of green 
                         (higher when there are more reservations) */}
 
-        <DatePicker label="On" />
-        <DatePicker label="To" />
+        <ReservationReport />
 
         {/* current date reservations: 
               Once the user clicks on the date he can see what users are and for how long

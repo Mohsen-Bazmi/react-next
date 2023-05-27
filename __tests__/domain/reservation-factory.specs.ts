@@ -3,7 +3,7 @@ import { friday, lastMonthOnMonday, monday, reserveCommand, saturday, theDayAfte
 import { BusinessRuleError } from "@/domain/errors";
 import { createReservation } from "@/domain/reservation-factory";
 import { Reserve } from "@/domain/reserve-command";
-import { NewReservation } from "@/domain/types"
+import { OpenOfBusinessHour, Reservation } from "@/domain/types"
 import { theMondayAfter } from "@/lib/date";
 import { setCurrentTime } from "@/lib/dependencies";
 
@@ -18,14 +18,14 @@ describe('reservation factory', () => {
 
         const reservation = createReservation(command);
 
-        expect(reservation).toEqual(<NewReservation>{
-            reserver: command.reserverName,
-            startDate: today,
+        expect(reservation).toEqual(<Reservation>{
             hours: [
-                { on: today, at: 9 },
-                { on: today, at: 10 },
-                { on: today, at: 11 }
-            ]
+                { date: today, at: 9 },
+                { date: today, at: 10 },
+                { date: today, at: 11 }
+            ],
+            reserver: command.reserver,
+            interval: { from: command.from, to: command.to },
         });
     });
 
@@ -41,16 +41,15 @@ describe('reservation factory', () => {
 
         const reservation = createReservation(command);
 
-        expect(reservation).toEqual(<NewReservation>{
-            reserver: command.reserverName,
-            startDate: today,
-            hours: [
-                { on: today, at: 16 },
+        expect(reservation).toEqual(
+            expect.objectContaining(<Reservation>{
+                hours: [
+                    { date: today, at: 16 },
 
-                { on: tomorrow, at: 9 },
-                { on: tomorrow, at: 10 },
-            ],
-        });
+                    { date: tomorrow, at: 9 },
+                    { date: tomorrow, at: 10 },
+                ],
+            }));
     });
 
 
@@ -86,7 +85,7 @@ describe('reservation factory', () => {
 
 
 
-    it('rejects reservations that start before 9 am', () => {
+    it('rejects pick-ups for before 9 am', () => {
         const command = A(reserveCommand,
             {
                 from: { date: today, at: 8 as any },
@@ -102,7 +101,7 @@ describe('reservation factory', () => {
 
 
 
-    it('rejects reservations that end after 5 pm', () => {
+    it('rejects drop-offs for after 5 pm', () => {
         const command = A(reserveCommand,
             {
                 from: { date: today, at: 9 },
@@ -186,23 +185,22 @@ describe('reservation factory', () => {
         const reservation = createReservation(command);
 
 
-        expect(reservation).toEqual(<NewReservation>{
-            reserver: command.reserverName,
-            startDate: today,
-            hours: [
-                { on: today, at: 9 },
-                { on: today, at: 10 },
-                { on: today, at: 11 },
-                { on: today, at: 12 },
-                { on: today, at: 13 },
-                { on: today, at: 14 },
-                { on: today, at: 15 },
-                { on: today, at: 16 },
+        expect(reservation).toEqual(
+            expect.objectContaining(<Reservation>{
+                hours: [
+                    { date: today, at: 9 },
+                    { date: today, at: 10 },
+                    { date: today, at: 11 },
+                    { date: today, at: 12 },
+                    { date: today, at: 13 },
+                    { date: today, at: 14 },
+                    { date: today, at: 15 },
+                    { date: today, at: 16 },
 
-                { on: tomorrow, at: 9 },
-                { on: tomorrow, at: 10 },
-            ],
-        });
+                    { date: tomorrow, at: 9 },
+                    { date: tomorrow, at: 10 },
+                ],
+            }));
     });
 
 
@@ -235,9 +233,8 @@ describe('reservation factory', () => {
         expect(createReservation(command)).
             toBeInstanceOf(BusinessRuleError));
 
+    
 
-
-            
     beforeEach(() => setCurrentTime(lastMonthOnMonday));
 
 })

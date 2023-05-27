@@ -1,8 +1,7 @@
-import { NewReservation, OpenOfBusiessHour, CloseOfBusiessHour, BusinessHour, ReservedHour } from "@/domain/types";
-import { ReservationInterval, Reserve } from "./reserve-command";
-import { areTheSameDay, isTomorrowOf } from "@/lib/date";
+import { Reservation, OpenOfBusinessHour, CloseOfBusiessHour, BusinessHour, ReservedHour, ReservationInterval } from "@/domain/types";
+import { Reserve } from "./reserve-command";
+import { areTheSameDay } from "@/lib/date";
 import { validateReserveCommand } from "./rules";
-import { log } from "console";
 
 function* hoursBetween(from: BusinessHour, to: number): Generator<BusinessHour> {
     for (let at = from; at < to; at++)
@@ -14,30 +13,30 @@ function* generateReservedHours({ from: start, to: end }: ReservationInterval): 
     if (areTheSameDay(start.date, end.date)) {
 
         for (const hour of hoursBetween(start.at, end.at))
-            yield { at: hour, on: start.date };
+            yield { at: hour, date: start.date };
 
         return;
     }
 
     const today = hoursBetween(start.at, CloseOfBusiessHour)
     for (const at of today)
-        yield { at, on: start.date };
+        yield { at, date: start.date };
 
-    const tomorrow = hoursBetween(OpenOfBusiessHour, end.at)
+    const tomorrow = hoursBetween(OpenOfBusinessHour, end.at)
     for (const at of tomorrow)
-        yield { at, on: end.date };
+        yield { at, date: end.date };
 
 }
 
 
-export const createReservation = (cmd: Reserve): NewReservation | Error => {
+export const createReservation = (cmd: Reserve): Reservation | Error => {
 
     const errors = validateReserveCommand(cmd);
     if (errors) return errors;
-    
+
     return {
-        reserver: cmd.reserverName,
-        startDate: cmd.from.date,
+        reserver: cmd.reserver,
+        interval: { from: cmd.from, to: cmd.to },
         hours: [...generateReservedHours(cmd)]
     }
 }

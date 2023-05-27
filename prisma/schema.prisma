@@ -23,6 +23,9 @@ model Reservations {
   firstName String
   lastName  String
   startDate DateTime
+  startHour Int
+  endDate   DateTime
+  endHour   Int
   hours     ReservedHours[]
 }
 

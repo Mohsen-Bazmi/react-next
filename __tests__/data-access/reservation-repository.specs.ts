@@ -1,12 +1,12 @@
 
 import { A } from "@/__test_until__/cloner";
-import { friday, John, monday, newReservation, today } from "@/__test_until__/prototypes";
+import { friday, John, monday, newReservation, today, todayAt5Pm, todayAt9am, todayFrom9To5pm } from "@/__test_until__/prototypes";
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
 import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
-import { ReservedHour } from "@/domain/types";
-import { firstDayOfMonth, firstDayOfNextMonth, lastDayOfLastMonth } from "@/lib/date";
+import { ReservedHour, Reservation } from "@/domain/types";
+import { firstDayOfNextMonth, lastDayOfLastMonth } from "@/lib/date";
 
 
 describe.each([
@@ -19,31 +19,24 @@ describe.each([
 
     it('stores reservations', async () => {
 
-        await reservations.add(A(newReservation, {
-            hours: [
-                { on: friday, at: 9 }
-            ],
-            reserver: John,
-            startDate: friday
-        }));
+        const originalReservation = A(newReservation);
 
-        expect(await reservations.on(friday))
-            .toContainEqual({
-                on: friday,
-                at: 9,
-                reserver: John
-            });
+        await reservations.add(originalReservation);
+
+        const fetchedReservation = await reservations.on(originalReservation.interval.from.date)
+
+        expect(fetchedReservation).toContainEqual(originalReservation);
     });
 
     it('counts reservations of each day', async () => {
 
         await reservations.add(A(newReservation, {
             hours: [
-                { on: friday, at: 9 },
-                { on: friday, at: 10 },
-                { on: friday, at: 11 },
-                { on: monday, at: 9 },
-                { on: monday, at: 10 },
+                { date: friday, at: 9 },
+                { date: friday, at: 10 },
+                { date: friday, at: 11 },
+                { date: monday, at: 9 },
+                { date: monday, at: 10 },
             ],
         }));
 
@@ -64,7 +57,7 @@ describe.each([
 
     it(`rejects reservations that contain overlaps`, async () => {
 
-        const duplicateHours: ReservedHour = { on: friday, at: 9 }
+        const duplicateHours: ReservedHour = { date: friday, at: 9 }
         const reservation = A(newReservation, {
             hours: [
                 duplicateHours,
@@ -93,9 +86,9 @@ describe.each([
 
         await reservations.add(A(newReservation, {
             hours: [
-                { on: today, at: 9 },
-                { on: lastMonth, at: 10 },
-                { on: nextMonth, at: 11 },
+                { date: today, at: 9 },
+                { date: lastMonth, at: 10 },
+                { date: nextMonth, at: 11 },
             ],
         }));
 
@@ -105,7 +98,7 @@ describe.each([
             expect.objectContaining({
                 date: lastMonth
             }));
-            
+
         expect(days).not.toContainEqual(
             expect.objectContaining({
                 date: nextMonth

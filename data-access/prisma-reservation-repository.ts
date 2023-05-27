@@ -1,4 +1,4 @@
-import { BusinessHour, NumberOfHoursPerDay } from '@/domain/types';
+import { BusinessHour, NumberOfHoursPerDay, Reservation, ReservedHour } from '@/domain/types';
 import { ReservationRepository } from '@/domain/reservation-repository';
 import { db } from '@/lib/db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -6,20 +6,24 @@ import { ReservationConfilictError } from '@/domain/errors';
 import { firstDayOfMonth, lastDayOfMonth } from '@/lib/date';
 
 export const PrismaReservationRepository: ReservationRepository = {
-    add: async ({ reserver, hours, startDate }) => {
+    add: async ({ reserver, hours, interval }) => {
+
         try {
-            const reservationId = startDate.toDateString() + reserver.firstName + reserver.lastName
+            const reservationId = interval.from.date.toDateString() + reserver.firstName + reserver.lastName
             await db.reservations.create({
                 data: {
                     id: reservationId, //Concurrency lock
-                    startDate,
                     firstName: reserver.firstName,
                     lastName: reserver.lastName,
+                    startDate: interval.from.date,
+                    startHour: interval.from.at,
+                    endDate: interval.to.date,
+                    endHour: interval.to.at,
                     hours: {
                         createMany: {
                             data: hours.map(h => ({
-                                id: `${h.on.toDateString()}_${h.at}`, //Concurrency lock
-                                date: h.on,
+                                id: `${h.date.toDateString()}_${h.at}`, //Concurrency lock
+                                date: h.date,
                                 hour: h.at,
                                 // reservationId,
                                 firstName: reserver.firstName,
@@ -34,7 +38,6 @@ export const PrismaReservationRepository: ReservationRepository = {
                 throw new ReservationConfilictError("Overlapping reservations. Two people cannot reserve the car, and a person can reserve the car no more than once a day.");
             throw e;
         }
-
     },
 
     forTheSameMonthAs: async (date) => {
@@ -59,21 +62,17 @@ export const PrismaReservationRepository: ReservationRepository = {
     },
 
     on: async (day) => {
-        const result = await db.reservedHours.findMany({
-            select: {
-                hour: true,
-                firstName: true,
-                lastName: true
-            }
-        })
-        return result.map(h => ({
-            on: day,
-            at: h.hour as BusinessHour,
-            reserver: {
-                firstName: h.firstName,
-                lastName: h.lastName
-            }
-        }))
+        const result = await db.reservations.findMany({
+            where: { startDate: day }, include: { hours: true }
+        });
+        return result.map(({ startDate, startHour, endDate, endHour, firstName, lastName, hours }) => ({
+            interval: {
+                from: { date: startDate, at: startHour as BusinessHour },
+                to: { date: endDate, at: endHour as BusinessHour }
+            },
+            reserver: { firstName, lastName },
+            hours: hours.map(h => ({ date: h.date, at: h.hour as BusinessHour }))
+        }));
     },
 
     clear: async () => {

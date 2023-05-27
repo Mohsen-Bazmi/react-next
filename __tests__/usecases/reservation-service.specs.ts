@@ -3,7 +3,7 @@ import { friday, lastMonthOnMonday, John, reserveCommand, today, tomorrow } from
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
 import { CancelReservation } from "@/domain/reserve-command";
-import { ReservedDayReadModel, ReservedHourReadModel } from "@/domain/types";
+import { ReservedHoursOfPerDay, Reservation } from "@/domain/types";
 import { setCurrentTime } from "@/lib/dependencies";
 import { setReservationRepository } from "@/lib/dependencies";
 import { ReservationService } from "@/usecases/reservation-service";
@@ -18,16 +18,19 @@ describe.each([
         const reserve = A(reserveCommand, {
             from: { date: friday, at: 9 },
             to: { date: friday, at: 10 },
-            reserverName: John
+            reserver: John
         });
 
         await ReservationService.handle(reserve);
         const reservationsForToday = await reservations.on(friday);
 
-        expect(reservationsForToday).toContainEqual({
-            on: friday,
-            at: 9,
-            reserver: John
+        expect(reservationsForToday).toContainEqual(<Reservation>{
+            hours: [{ date: friday, at: 9 }],
+            reserver: John,
+            interval: {
+                from: { date: friday, at: 9 },
+                to: { date: friday, at: 10 }
+            },
         });
 
     });
