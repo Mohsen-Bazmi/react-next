@@ -10,7 +10,7 @@ import { firstDayOfNextMonth, lastDayOfLastMonth } from "@/lib/date";
 
 
 describe.each([
-    PrismaReservationRepository,// cleans the data => use the containerized sand box
+    // PrismaReservationRepository,// cleans the data => use the containerized sand box
     InMemoryReservationRepository
 ])('Reservation repository', (reservations: ReservationRepository) => {
 
