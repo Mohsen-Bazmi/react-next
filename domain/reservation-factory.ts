@@ -18,7 +18,6 @@ function* generateReservedHours({ from: start, to: end }: ReservationInterval): 
 
         return;
     }
-    log({ sameday:areTheSameDay(start.date, end.date) })
 
     const today = hoursBetween(start.at, CloseOfBusiessHour)
     for (const at of today)

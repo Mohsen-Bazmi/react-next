@@ -3,7 +3,7 @@ import { NewReservation, ReservedDayReadModel, ReservedHourReadModel } from "./t
 
 export type ReservationRepository = {
     add: (reservation: NewReservation) => Promise<void>;
-    days: () => Promise<ReservedDayReadModel[]>;
-    of: (day: Date) => Promise<ReservedHourReadModel[]>;
+    forTheSameMonthAs: (month:Date) => Promise<ReservedDayReadModel[]>;
+    on: (day: Date) => Promise<ReservedHourReadModel[]>;
     clear: () => Promise<void>
 };

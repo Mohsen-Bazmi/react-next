@@ -3,6 +3,7 @@ import { ReservationRepository } from '@/domain/reservation-repository';
 import { db } from '@/lib/db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ReservationConfilictError } from '@/domain/errors';
+import { firstDayOfMonth, lastDayOfMonth } from '@/lib/date';
 
 export const PrismaReservationRepository: ReservationRepository = {
     add: async ({ reserver, hours, startDate }) => {
@@ -36,10 +37,17 @@ export const PrismaReservationRepository: ReservationRepository = {
 
     },
 
-    days: async () => {
-
+    forTheSameMonthAs: async (date) => {
+        const startOfMonth = firstDayOfMonth(date);
+        const endOfMonth = lastDayOfMonth(date);
         const dates = await db.reservedHours.groupBy({
             by: ['date'],
+            where: {
+                date: {
+                    gte: startOfMonth,
+                    lte: endOfMonth
+                }
+            },
             _count: true,
         });
 
@@ -50,7 +58,7 @@ export const PrismaReservationRepository: ReservationRepository = {
 
     },
 
-    of: async (day) => {
+    on: async (day) => {
         const result = await db.reservedHours.findMany({
             select: {
                 hour: true,

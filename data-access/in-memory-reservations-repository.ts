@@ -1,6 +1,7 @@
 import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
 import { NewReservation, ReservedDayReadModel, ReservedHour, ReservedHourReadModel } from "@/domain/types";
+import { firstDayOfMonth, lastDayOfMonth } from "@/lib/date";
 
 export const InMemoryReservationRepository: ReservationRepository = {
 
@@ -13,9 +14,12 @@ export const InMemoryReservationRepository: ReservationRepository = {
 
         return Promise.resolve();
     },
-    days: (): Promise<ReservedDayReadModel[]> => {
+    forTheSameMonthAs: (date): Promise<ReservedDayReadModel[]> => {
+        const startOfMonth = firstDayOfMonth(date);
+        const endOfMonth = lastDayOfMonth(date);
+
         const result = reservations
-            .flatMap(r => r.hours)
+            .flatMap(r => r.hours.filter(h => h.on > startOfMonth && endOfMonth > h.on))
             .reduce<ReservedDayReadModel[]>((previousResult, curr) => {
                 let group = previousResult.find(group => curr.on == group.date);
                 if (!group) {
@@ -29,7 +33,7 @@ export const InMemoryReservationRepository: ReservationRepository = {
         return Promise.resolve(result);
 
     },
-    of: (day: Date): Promise<ReservedHourReadModel[]> => {
+    on: (day: Date): Promise<ReservedHourReadModel[]> => {
         const result: ReservedHourReadModel[] =
             reservations.flatMap(r =>
                 r.hours.map(h => ({

@@ -1,15 +1,16 @@
 
 import { A } from "@/__test_until__/cloner";
-import { friday, mohsen, monday, newReservation } from "@/__test_until__/prototypes";
+import { friday, John, monday, newReservation, today } from "@/__test_until__/prototypes";
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
 import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
 import { ReservedHour } from "@/domain/types";
+import { firstDayOfMonth, firstDayOfNextMonth, lastDayOfLastMonth } from "@/lib/date";
 
 
 describe.each([
-    // PrismaReservationRepository,// cleans the data => use the containerized sand box
+    PrismaReservationRepository,// cleans the data => use the containerized sand box
     InMemoryReservationRepository
 ])('Reservation repository', (reservations: ReservationRepository) => {
 
@@ -22,15 +23,15 @@ describe.each([
             hours: [
                 { on: friday, at: 9 }
             ],
-            reserver: mohsen,
+            reserver: John,
             startDate: friday
         }));
 
-        expect(await reservations.of(friday))
+        expect(await reservations.on(friday))
             .toContainEqual({
                 on: friday,
                 at: 9,
-                reserver: mohsen
+                reserver: John
             });
     });
 
@@ -44,10 +45,9 @@ describe.each([
                 { on: monday, at: 9 },
                 { on: monday, at: 10 },
             ],
-            startDate: friday
         }));
 
-        const days = await reservations.days();
+        const days = await reservations.forTheSameMonthAs(friday);
 
         expect(days).toContainEqual({
             date: friday,
@@ -86,5 +86,30 @@ describe.each([
             .toThrow(ReservationConfilictError);
 
     });
+
+    it(`filters reservations by month`, async () => {
+        const lastMonth = lastDayOfLastMonth(today);
+        const nextMonth = firstDayOfNextMonth(today);
+
+        await reservations.add(A(newReservation, {
+            hours: [
+                { on: today, at: 9 },
+                { on: lastMonth, at: 10 },
+                { on: nextMonth, at: 11 },
+            ],
+        }));
+
+        const days = await reservations.forTheSameMonthAs(friday);
+
+        expect(days).not.toContainEqual(
+            expect.objectContaining({
+                date: lastMonth
+            }));
+            
+        expect(days).not.toContainEqual(
+            expect.objectContaining({
+                date: nextMonth
+            }));
+    })
 
 })
