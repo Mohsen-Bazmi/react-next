@@ -1,8 +1,9 @@
-import { zeroOfDay, dayAt, businessDayDifference } from "@/lib/date";
+import { zeroOfDay, dayAt, businessDayDifference, isAWeekend } from "@/lib/date";
 import { ReservationInterval } from "./reserve-command";
 import { OpenOfBusiessHour, CloseOfBusiessHour } from "./types";
 import { getCurrentTime as now } from "@/lib/dependencies";
 import { BusinessRuleError } from "./errors";
+import { log } from "console";
 
 export const validateReserveCommand = ({ from: start, to: end }: ReservationInterval): BusinessRuleError | void => {
 
@@ -11,6 +12,7 @@ export const validateReserveCommand = ({ from: start, to: end }: ReservationInte
     const endDate = zeroOfDay(end.date);
     const dayDifference = businessDayDifference(endDate, startDate);
 
+    if (isAWeekend(start.date)) return new BusinessRuleError(`Impossible to pick up on weekends`);
     if (start.at < OpenOfBusiessHour) return new BusinessRuleError(`Impossible to pick up earlier than ${OpenOfBusiessHour}`);
     if (end.at > CloseOfBusiessHour) return new BusinessRuleError(`Impossible to drop off after ${CloseOfBusiessHour}`);
     if (startTime < now()) return new BusinessRuleError("Impossible to reserve the car for past");

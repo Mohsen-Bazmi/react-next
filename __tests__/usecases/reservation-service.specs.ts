@@ -1,5 +1,5 @@
 import { A } from "@/__test_until__/cloner";
-import { pastYear, reserveCommand, today, tomorrow } from "@/__test_until__/prototypes";
+import { lastMonthOnMonday, reserveCommand, today, tomorrow } from "@/__test_until__/prototypes";
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
 import { CancelReservation } from "@/domain/reserve-command";
@@ -14,7 +14,7 @@ describe.each([
 ])('reservation service', (repository) => {
 
     beforeEach(() => setReservationRepository(repository));
-    beforeAll(() => setCurrentTime(pastYear));
+    beforeAll(() => setCurrentTime(lastMonthOnMonday));
     afterEach(repository.clear);
 
     it('reserves the car', async () => {

@@ -1,16 +1,18 @@
 import { Reserve } from "@/domain/reserve-command";
 import { NewReservation } from "@/domain/types";
 import { getCurrentTime } from "@/lib/dependencies";
-import { addDays, nextFriday, nextMonday, subDays, subYears } from "date-fns";
+import { addDays, nextFriday, nextMonday, nextSaturday, nextSunday, subDays, subMonths, subYears } from "date-fns";
 
 export const mohsen = { firstName: 'Mohsen', lastName: 'Bazmi' };
-export const today = getCurrentTime();
+export const monday = nextMonday(getCurrentTime());
+export const today = monday;
+export const friday = nextFriday(today);
+export const saturday = nextSunday(today);
 export const yesterday = subDays(today, 1);
 export const tomorrow = addDays(today, 1);
 export const theDayAfterTomorrow = addDays(tomorrow, 1);
-export const pastYear = subYears(today, 1);
-export const friday = nextFriday(today);
-export const monday = nextMonday(today);
+export const lastMonthOnMonday = nextMonday(subMonths(today, 1));
+
 export const reserveCommand: Reserve = {
     type: 'reserve',
     reserverName: mohsen,

@@ -1,11 +1,10 @@
 import { A } from "@/__test_until__/cloner";
-import { pastYear, reserveCommand, theDayAfterTomorrow, today, tomorrow } from "@/__test_until__/prototypes";
+import { lastMonthOnMonday, monday, reserveCommand, saturday, theDayAfterTomorrow, today, tomorrow } from "@/__test_until__/prototypes";
 import { BusinessRuleError } from "@/domain/errors";
 import { createReservation } from "@/domain/reservation-factory";
+import { Reserve } from "@/domain/reserve-command";
 import { NewReservation } from "@/domain/types"
 import { setCurrentTime } from "@/lib/dependencies";
-import { log } from "console";
-
 
 describe('reservation factory', () => {
 
@@ -177,7 +176,7 @@ describe('reservation factory', () => {
     });
 
     //Defect Driven Tests:
-    it(`doesn't allow taday's hours to overlap tomorrow's`, () => {
+    it(`doesn't confilict between taday's hours and tomorrow's`, () => {
         const command = A(reserveCommand, {
             from: { date: today, at: 9 },
             to: { date: tomorrow, at: 11 },
@@ -205,7 +204,20 @@ describe('reservation factory', () => {
         });
     });
 
+    it.each([
+        A(reserveCommand, {
+            from: { date: saturday, at: 9 },
+            to: { date: saturday, at: 11 },
+        }),
+        A(reserveCommand, {
+            from: { date: saturday, at: 9 },
+            to: { date: monday, at: 11 },
+        })
+    ])(`doesn't accept weekend pick-ups`, (command: Reserve) =>
+        expect(createReservation(command)).
+            toBeInstanceOf(BusinessRuleError)
+    )
 
-    beforeEach(() => setCurrentTime(pastYear));
+    beforeEach(() => setCurrentTime(lastMonthOnMonday));
 
 })

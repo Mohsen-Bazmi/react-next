@@ -2,6 +2,7 @@ import { NewReservation, OpenOfBusiessHour, CloseOfBusiessHour, BusinessHour, Re
 import { ReservationInterval, Reserve } from "./reserve-command";
 import { areTheSameDay, isTomorrowOf } from "@/lib/date";
 import { validateReserveCommand } from "./rules";
+import { log } from "console";
 
 function* hoursBetween(from: BusinessHour, to: number): Generator<BusinessHour> {
     for (let at = from; at < to; at++)
@@ -11,12 +12,13 @@ function* hoursBetween(from: BusinessHour, to: number): Generator<BusinessHour> 
 function* generateReservedHours({ from: start, to: end }: ReservationInterval): Generator<ReservedHour> {
 
     if (areTheSameDay(start.date, end.date)) {
-        
+
         for (const hour of hoursBetween(start.at, end.at))
             yield { at: hour, on: start.date };
-            
+
         return;
     }
+    log({ sameday:areTheSameDay(start.date, end.date) })
 
     const today = hoursBetween(start.at, CloseOfBusiessHour)
     for (const at of today)
@@ -33,7 +35,7 @@ export const createReservation = (cmd: Reserve): NewReservation | Error => {
 
     const errors = validateReserveCommand(cmd);
     if (errors) return errors;
-
+    log({ cmd })
     return {
         reserver: cmd.reserverName,
         startDate: cmd.from.date,
