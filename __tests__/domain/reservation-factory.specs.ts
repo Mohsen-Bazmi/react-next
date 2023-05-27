@@ -1,5 +1,5 @@
 import { A } from "@/__test_until__/cloner";
-import { friday, lastMonthOnMonday, monday, reserveCommand, saturday, theDayAfterTomorrow, today, tomorrow } from "@/__test_until__/prototypes";
+import { friday, lastMonthOnMonday, monday, reserveCommand, saturday, theDayAfterTomorrow, today, todayAt9am, tomorrow } from "@/__test_until__/prototypes";
 import { BusinessRuleError } from "@/domain/errors";
 import { createReservation } from "@/domain/reservation-factory";
 import { Reserve } from "@/domain/reserve-command";
@@ -162,14 +162,14 @@ describe('reservation factory', () => {
 
 
     it('rejects reservations with past pick-up times', () => {
-        setCurrentTime(today);
-        const command = A(reserveCommand,
+
+        setCurrentTime(tomorrow);
+
+        const result = createReservation(A(reserveCommand,
             {
                 from: { date: today, at: 11 },
-                to: { date: today, at: 11 }
-            });
-
-        const result = createReservation(command);
+                to: { date: today, at: 12 }
+            }));
 
         expect(result).toBeInstanceOf(BusinessRuleError);
 
@@ -233,7 +233,18 @@ describe('reservation factory', () => {
         expect(createReservation(command)).
             toBeInstanceOf(BusinessRuleError));
 
-    
+
+    //Characerization Tests:
+    it(`rejects reservations with the same pick-up and drop-off times`, () => {
+
+        const result = createReservation(A(reserveCommand,
+            {
+                from: todayAt9am,
+                to: todayAt9am
+            }));
+
+        expect(result).not.toThrow();
+    })
 
     beforeEach(() => setCurrentTime(lastMonthOnMonday));
 
