@@ -3,7 +3,7 @@ import { friday, lastMonthOnMonday, John, reserveCommand, today, tomorrow } from
 import { InMemoryReservationRepository } from "@/data-access/in-memory-reservations-repository";
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
 import { CancelReservation } from "@/domain/reserve-command";
-import { ReservedHoursOfPerDay, Reservation } from "@/domain/types";
+import { ReservedHoursPerDay, Reservation } from "@/domain/types";
 import { setCurrentTime } from "@/lib/dependencies";
 import { setReservationRepository } from "@/lib/dependencies";
 import { ReservationService } from "@/usecases/reservation-service";

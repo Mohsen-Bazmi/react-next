@@ -43,7 +43,7 @@ export type Reservation = {
     interval: ReservationInterval
 };
 
-export type ReservedHoursOfPerDay = {
+export type ReservedHoursPerDay = {
     date: Date,
     numberOfHours: NumberOfHoursPerDay
 };

@@ -1,5 +1,5 @@
 'use client'
-import { NumberOfHoursPerDay } from "@/domain/types";
+import { NumberOfHoursPerDay, Reservation, ReservedHoursPerDay } from "@/domain/types";
 import { useState } from "react";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
@@ -12,7 +12,9 @@ export const ReservationReport = ({}) => {
     const numberOfReservationsOn = (e: any): NumberOfHoursPerDay =>
         Math.floor(Math.random() * 9) as NumberOfHoursPerDay;
 
-
+    const reservationsOfDay:Reservation[] = [
+        
+    ]
 
     return <div className="flex flex-col">
         <div className="text-gray-800 bg-gree">
@@ -27,6 +29,9 @@ export const ReservationReport = ({}) => {
                     
                 tileClassName="relative" />
             <Tooltip id="reserved-hours-for-day" />
+        </div>
+        <div>
+            
         </div>
     </div>
 }

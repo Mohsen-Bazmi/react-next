@@ -1,6 +1,6 @@
 import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
-import { ReservedHoursOfPerDay, ReservedHour, Reservation } from "@/domain/types";
+import { ReservedHoursPerDay, ReservedHour, Reservation } from "@/domain/types";
 import { firstDayOfMonth, lastDayOfMonth } from "@/lib/date";
 
 export const InMemoryReservationRepository: ReservationRepository = {
@@ -16,16 +16,16 @@ export const InMemoryReservationRepository: ReservationRepository = {
     },
 
 
-    forTheSameMonthAs: (date): Promise<ReservedHoursOfPerDay[]> => {
+    forTheSameMonthAs: (date): Promise<ReservedHoursPerDay[]> => {
         const startOfMonth = firstDayOfMonth(date);
         const endOfMonth = lastDayOfMonth(date);
 
         const result = storedReservations
             .flatMap(({hours}) => hours.filter(({date}) => date > startOfMonth && endOfMonth > date))
-            .reduce<ReservedHoursOfPerDay[]>((previousResult, curr) => {
+            .reduce<ReservedHoursPerDay[]>((previousResult, curr) => {
                 let group = previousResult.find(group => curr.date == group.date);
                 if (!group) {
-                    group = { date: curr.date, numberOfHours: 0 } as ReservedHoursOfPerDay;
+                    group = { date: curr.date, numberOfHours: 0 } as ReservedHoursPerDay;
                     previousResult.push(group);//FIX: stop mutating the argument
                 }
                 group.numberOfHours++
