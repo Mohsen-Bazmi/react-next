@@ -1,9 +1,9 @@
 import { A } from "@/__test_until__/cloner";
-import { friday, lastMonthOnMonday, monday, reserveCommand, saturday, theDayAfterTomorrow, today, todayAt9am, tomorrow } from "@/__test_until__/prototypes";
+import { friday, lastMonthOnMonday, reserveCommand, saturday, theDayAfterTomorrow, today, todayAt9am, tomorrow } from "@/__test_until__/prototypes";
 import { BusinessRuleError } from "@/domain/errors";
 import { createReservation } from "@/domain/reservation-factory";
 import { Reserve } from "@/domain/reserve-command";
-import { OpenOfBusinessHour, Reservation } from "@/domain/types"
+import { Reservation } from "@/domain/types"
 import { theMondayAfter } from "@/lib/date";
 import { setCurrentTime } from "@/lib/dependencies";
 
@@ -243,7 +243,7 @@ describe('reservation factory', () => {
                 to: todayAt9am
             }));
 
-        expect(result).not.toThrow();
+        expect(result).toBeInstanceOf(BusinessRuleError);
     })
 
     beforeEach(() => setCurrentTime(lastMonthOnMonday));
