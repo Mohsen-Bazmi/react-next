@@ -1,17 +1,13 @@
+import { RangeOfLength } from "@/lib/types";
+
 export const BusinessHours = [9, 10, 11, 12, 13, 14, 15, 16] as const;
-export const OpenOfBusinessHour = 9;
-export const CloseOfBusiessHour = 17;
-
 export type BusinessHour = typeof BusinessHours[number];
-export type OpenOfBusinessHour = 9;
-export type CloseOfBusinessHour = 17;
-const isBusinessHour = (hour: any): hour is BusinessHour =>
-    BusinessHours.includes(hour);
-const isWithinClosedBusinessHoursInterval = (hour: any): hour is BusinessHour | CloseOfBusinessHour =>
-    [...BusinessHours, CloseOfBusiessHour].includes(hour);
 
-type RangeOfLength<Num extends number, Result extends Array<unknown> = []> =
-    Result['length'] extends Num ? Result : RangeOfLength<Num, [...Result, Result['length']]>
+export type OpenOfBusinessHour = 9;
+export const OpenOfBusinessHour = 9;
+
+export const CloseOfBusiessHour = 17;
+export type CloseOfBusinessHour = 17;
 
 export type NumberOfHoursPerDay = RangeOfLength<BusinessHour>[number];
 

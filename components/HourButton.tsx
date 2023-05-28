@@ -1,6 +1,6 @@
-import { BusinessHour } from "@/domain/types";
+import { BusinessHour, CloseOfBusinessHour } from "@/domain/types";
 
-export type HourProps = { hour: BusinessHour, isFree: Boolean };
+export type HourProps = { hour: number, isFree: Boolean };
 export const Hour = ({ hour, isFree }: HourProps) => {
     let classes = "border-white disabled hover:border-2 w-10 h-10 rounded-lg flex items-center justify-center shadow-lg";
     if (!isFree) {

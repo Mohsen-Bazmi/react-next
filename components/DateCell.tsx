@@ -2,7 +2,7 @@ import { NumberOfHoursPerDay } from "@/domain/types";
 
 export const DateCell = ({ count }: { count: NumberOfHoursPerDay }) =>
     <div data-tooltip-id="reserved-hours-for-day"
-        data-tooltip-content={count.toString()}
+        data-tooltip-content={count.toString()+" Reservations"}
         className={classNamesFor(count) + " absolute top-0 left-0 w-full h-full bg-opacity-50"}>
     </div>
 

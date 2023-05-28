@@ -1,5 +1,5 @@
 import { zeroOfDay, dayAt, businessDayDifference, isAWeekend } from "@/lib/date";
-import { OpenOfBusinessHour, CloseOfBusiessHour, ReservationInterval } from "./types";
+import { OpenOfBusinessHour, CloseOfBusiessHour, ReservationInterval, BusinessHour, BusinessHours, CloseOfBusinessHour } from "./types";
 import { getCurrentTime as now } from "@/lib/dependencies";
 import { BusinessRuleError } from "./errors";
 
@@ -19,3 +19,12 @@ export const validateReserveCommand = ({ from: start, to: end }: ReservationInte
     if (dayDifference > 1 || dayDifference === 1 && end.at > 11) return new BusinessRuleError("Impossible to drop off later than the next business day at 11.");
     if (dayDifference == 0 && start.at >= end.at || startDate > endDate) return new BusinessRuleError("Impossible to drop off at the same time or before picking up.");
 }
+
+
+const isBusinessHour = (hour: any): hour is BusinessHour =>
+    BusinessHours.includes(hour);
+
+
+const isWithinClosedBusinessHoursInterval = (hour: any):
+    hour is BusinessHour | CloseOfBusinessHour =>
+    [...BusinessHours, CloseOfBusiessHour].includes(hour);

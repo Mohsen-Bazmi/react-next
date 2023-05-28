@@ -1,17 +1,18 @@
+import { ReservationForm } from "@/components/ReservationForm";
 import { ReservationReport } from "@/components/ReservationReport";
 
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
         {/* calendar for the current month: 
               The number of that dayʼs reservation when we hover
               over it. Also for each day, it should show a different shade of green 
                         (higher when there are more reservations) */}
 
         <ReservationReport />
-
+        <ReservationForm />
         {/* current date reservations: 
               Once the user clicks on the date he can see what users are and for how long
                       they are using the car that day. (if any)
