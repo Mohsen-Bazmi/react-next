@@ -10,7 +10,3 @@ body {
     radial-gradient(at 100% 6%, hsla(336, 11%, 33%, 1) 0px, transparent 50%);
   color: white;
 }
-
-input[type=text] {
-  color: black;
-}

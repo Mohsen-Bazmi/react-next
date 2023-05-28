@@ -1,5 +1,5 @@
-import { ReservationReport } from "./ReservationReport"
+import { ReservationCalendar } from "./ReservationCalendar"
 
 const ReservationReportShell = ()=>{
-    return <ReservationReport/>
+    return <ReservationCalendar/>
 }
