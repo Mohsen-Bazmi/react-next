@@ -1,4 +1,4 @@
-import { CustomizeEach, RangeOfLength } from "@/lib/types";
+import { RangeOfLength } from "@/lib/types";
 
 export const BusinessHours = [9, 10, 11, 12, 13, 14, 15, 16] as const;
 export type BusinessHour = typeof BusinessHours[number];
@@ -42,6 +42,7 @@ export type Reserver = {
 }
 
 export type Reservation = {
+    id:string
     reserver: Reserver
     hours: ReservedHour[]
     interval: ReservationInterval

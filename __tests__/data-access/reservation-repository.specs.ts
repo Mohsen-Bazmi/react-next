@@ -5,7 +5,7 @@ import { InMemoryReservationRepository } from "@/data-access/in-memory-reservati
 import { PrismaReservationRepository } from "@/data-access/prisma-reservation-repository";
 import { ReservationConfilictError } from "@/domain/errors";
 import { ReservationRepository } from "@/domain/reservation-repository";
-import { ReservedHour, Reservation } from "@/domain/types";
+import { ReservedHour } from "@/domain/types";
 import { firstDayOfNextMonth, lastDayOfLastMonth } from "@/lib/date";
 
 

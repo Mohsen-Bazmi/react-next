@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin')
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -14,5 +15,10 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addVariant }) {
+      // Add a `third` variant, ie. `third:pb-0`
+      addVariant('child', '& > *')
+    })
+  ],
 }

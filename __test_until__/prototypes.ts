@@ -1,6 +1,7 @@
 import { Reserve } from "@/domain/reserve-command";
 import { BusinessHours, CloseOfBusiessHour, OpenOfBusinessHour, ReservationInterval } from "@/domain/types";
 import { Reservation, ReservationEnd, ReservedHour } from "@/domain/types";
+import generateUUID from "@/lib/uuid";
 import { addDays, nextFriday, nextMonday, nextSunday, subDays, subMonths, subYears } from "date-fns";
 
 export const John = { firstName: 'John', lastName: 'Doe' };
@@ -18,6 +19,7 @@ export const reserveCommand: Reserve = {
     reserver: John,
     from: { date: today, at: 16 },
     to: { date: tomorrow, at: 11 },
+    reservationId: generateUUID(),
 };
 export const todayAt9am: ReservedHour = { date: today, at: OpenOfBusinessHour };
 export const todayAt4pm: ReservedHour = { date: today, at: OpenOfBusinessHour };
@@ -31,6 +33,7 @@ export const fullDayToday = {
     hours: BusinessHours.map(h => ({ date: today, at: h }))
 }
 export const newReservation: Reservation = {
+    id: generateUUID(),
     ...fullDayToday,
     reserver: John,
 }

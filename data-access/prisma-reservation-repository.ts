@@ -1,4 +1,4 @@
-import { BusinessHour, NumberOfHoursPerDay, Reservation, ReservedHour } from '@/domain/types';
+import { BusinessHour, NumberOfHoursPerDay, Reservation, ReservationEnd, ReservationInterval, ReservationStart, ReservedHour } from '@/domain/types';
 import { ReservationRepository } from '@/domain/reservation-repository';
 import { db } from '@/lib/db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -6,13 +6,12 @@ import { ReservationConfilictError } from '@/domain/errors';
 import { firstDayOfMonth, lastDayOfMonth } from '@/lib/date';
 
 export const PrismaReservationRepository: ReservationRepository = {
-    add: async ({ reserver, hours, interval }) => {
+    add: async ({ id, reserver, hours, interval }) => {
 
         try {
-            const reservationId = interval.from.date.toDateString() + reserver.firstName + reserver.lastName
             await db.reservations.create({
                 data: {
-                    id: reservationId, //Concurrency lock
+                    id: id, //Concurrency lock
                     firstName: reserver.firstName,
                     lastName: reserver.lastName,
                     startDate: interval.from.date,
@@ -35,7 +34,7 @@ export const PrismaReservationRepository: ReservationRepository = {
             });
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002')
-                throw new ReservationConfilictError("Overlapping reservations. Two people cannot reserve the car, and a person can reserve the car no more than once a day.");
+                throw new ReservationConfilictError("Overlapping reservations. Two people cannot reserve the car at the same time, and a person can reserve the car no more than once a day.");
             throw e;
         }
     },
@@ -65,10 +64,11 @@ export const PrismaReservationRepository: ReservationRepository = {
         const result = await db.reservations.findMany({
             where: { startDate: day }, include: { hours: true }
         });
-        return result.map(({ startDate, startHour, endDate, endHour, firstName, lastName, hours }) => ({
+        return result.map(({ id, startDate, startHour, endDate, endHour, firstName, lastName, hours }) => ({
+            id,
             interval: {
-                from: { date: startDate, at: startHour as BusinessHour },
-                to: { date: endDate, at: endHour as BusinessHour }
+                from: { date: startDate, at: startHour } as ReservationStart,
+                to: { date: endDate, at: endHour } as ReservationEnd
             },
             reserver: { firstName, lastName },
             hours: hours.map(h => ({ date: h.date, at: h.hour as BusinessHour }))

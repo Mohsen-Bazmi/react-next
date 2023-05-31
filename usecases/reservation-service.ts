@@ -4,10 +4,10 @@ import { getReservationRepository } from "@/lib/dependencies";
 
 type CommandHandler = (command: Reserve | CancelReservation) => Promise<void>;
 // To allow Aspect Oriented Programming
-type ReservationService = { handle: CommandHandler };
+export type ReservationService = { execute: CommandHandler };
 
 export const ReservationService: ReservationService = {
-    handle: async (command: Reserve | CancelReservation) => {
+    execute: async (command: Reserve | CancelReservation) => {
         if (command.type === "reserve") {
             
             const reservation = createReservation(command);

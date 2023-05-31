@@ -1,7 +1,7 @@
 import { Reservation, OpenOfBusinessHour, CloseOfBusiessHour, BusinessHour, ReservedHour, ReservationInterval } from "@/domain/types";
 import { Reserve } from "./reserve-command";
 import { areTheSameDay } from "@/lib/date";
-import { validateReserveCommand } from "./rules";
+import { createReservationId, validateReserveCommand } from "./rules";
 
 function* hoursBetween(from: BusinessHour, to: number): Generator<BusinessHour> {
     for (let at = from; at < to; at++)
@@ -34,12 +34,18 @@ export const createReservation = (cmd: Reserve): Reservation | Error => {
     const errors = validateReserveCommand(cmd);
     if (errors) return errors;
 
+
     return {
+        id: cmd.reservationId ?? createReservationId(cmd),
+
         reserver: cmd.reserver,
+
         interval: { from: cmd.from, to: cmd.to },
+
         hours: [...generateReservedHours(cmd)]
     }
 }
+
 
 
 

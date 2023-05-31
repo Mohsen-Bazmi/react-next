@@ -26,7 +26,9 @@ describe('reservation factory', () => {
             ],
             reserver: command.reserver,
             interval: { from: command.from, to: command.to },
+            id: command.reservationId
         });
+
     });
 
 
@@ -245,6 +247,7 @@ describe('reservation factory', () => {
 
         expect(result).toBeInstanceOf(BusinessRuleError);
     })
+
 
     beforeEach(() => setCurrentTime(lastMonthOnMonday));
 

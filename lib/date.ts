@@ -1,4 +1,4 @@
-import { differenceInBusinessDays, startOfDay, addHours, isSameDay, isWeekend, addDays, nextMonday, startOfMonth, endOfMonth, subDays, addMonths } from "date-fns";
+import { differenceInBusinessDays, startOfDay, addHours, isSameDay, isWeekend, addDays, nextMonday, startOfMonth, endOfMonth, subDays, addMonths, addBusinessDays } from "date-fns";
 
 export const isTomorrowOf = (left: Date, right: Date) =>
     businessDayDifference(zeroOfDay(right), zeroOfDay(left)) == 1
@@ -33,3 +33,6 @@ export const firstDayOfNextMonth = (date: Date) =>
 
 export const nextMonth = (date: Date) =>
     addMonths(date, 1)
+
+export const nextBusinessDayAfter = (date: Date) =>
+    addBusinessDays(date, 1);
